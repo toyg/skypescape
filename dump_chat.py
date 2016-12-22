@@ -1,3 +1,8 @@
+#!/usr/bin/env python3
+
+# (c) 2016 Giacomo Lacava.
+# Released under terms of the MIT license (see LICENSE file).
+
 import logging
 import sqlite3
 import sys
