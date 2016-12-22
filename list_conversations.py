@@ -1,16 +1,12 @@
 import base64
-from datetime import datetime
-from time import perf_counter
-
-from os.path import exists
-
-from os.path import dirname
-
-from os import makedirs
-
-import sqlite3
-
 import logging
+import sqlite3
+import sys
+from datetime import datetime
+from os import makedirs
+from os.path import dirname
+from os.path import exists
+from time import perf_counter
 
 
 class ConversationDescriptionSerializer:
@@ -208,8 +204,16 @@ order by num desc"""
 
 
 if __name__ == '__main__':
-    conn = sqlite3.connect("test_data/giacomolacava/main.db")
-    logging.getLogger().setLevel(logging.DEBUG)
+    if len(sys.argv) < 2:
+        print("Specify path to main.db (and optionally, path to HTML file to output).")
+        sys.exit(1)
+
+    out_file_name = "conversations.html"
+    if len(sys.argv) > 2:
+        out_file_name = sys.argv[2]
+
+    conn = sqlite3.connect(sys.argv[1])
+    logging.getLogger().setLevel(logging.ERROR)
     extractor = ConversationListExtractor(conn)
-    extractor.extract_list("test_data/conversations.html", overwrite=True)
-    logging.info("Completed!")
+    extractor.extract_list(out_file_name, overwrite=False)
+    logging.info("Completed export!")
