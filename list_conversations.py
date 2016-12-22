@@ -212,8 +212,9 @@ if __name__ == '__main__':
     if len(sys.argv) > 2:
         out_file_name = sys.argv[2]
 
-    conn = sqlite3.connect(sys.argv[1])
     logging.getLogger().setLevel(logging.ERROR)
+
+    conn = sqlite3.connect(sys.argv[1])
     extractor = ConversationListExtractor(conn)
     extractor.extract_list(out_file_name, overwrite=False)
     logging.info("Completed export!")
