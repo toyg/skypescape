@@ -1,18 +1,14 @@
+import logging
 import sqlite3
+import sys
+from copy import copy
 from datetime import datetime
+from os import makedirs
 from os.path import basename
+from os.path import exists, dirname
 from os.path import join
 from time import perf_counter
-
-from copy import copy
-
-from os.path import exists, dirname
-
-from os import makedirs
 from xml.dom import minidom
-from xml.etree import ElementTree as et
-
-import logging
 
 
 def transform_non_html_nodes(xml_document):
@@ -215,7 +211,21 @@ class ConversationExtractor:
                 return serializer.to_html(col_names, queryset)
 
 if __name__ == "__main__":
-    conn = sqlite3.connect("test_data/giacomolacava/main.db")
-    extractor = ConversationExtractor(conn, [101405,182685,59214,185538])
-    extractor.dump("test_data/dailygrind.html", overwrite=True)
-    logging.info("Completed!")
+    if len(sys.argv) < 2:
+        print("Specify path to main.db and comma-separated conversation IDs to export "
+              "(and optionally, path to HTML file to output).")
+        sys.exit(1)
+
+    db_path = sys.argv[1]
+    convo_IDs = sys.argv[2].split(",")
+
+    out_file_name = "chat_transcript.html"
+    if len(sys.argv) > 3:
+        out_file_name = sys.argv[3]
+
+    logging.getLogger().setLevel(logging.ERROR)
+
+    conn = sqlite3.connect(sys.argv[1])
+    extractor = ConversationExtractor(conn, convo_IDs)
+    extractor.dump(out_file_name, overwrite=False)
+    logging.info("Completed export!")
